@@ -6,6 +6,7 @@ variable slack_bot_token {}
 
 terraform {
   backend "s3" {
+      region = "ap-northeast-1"
   }
 }
 
