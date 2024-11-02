@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./terraform.tfvars
+export $(grep -v '^#' terraform.tfvars | sed 's/ *= */=/' | xargs)
 
 aws_account_id=$(aws --profile $aws_profile sts get-caller-identity --query 'Account' --output text)
 
