@@ -1,1 +1,1 @@
-# slack-to-sns-auto-post
+# StatusNavi
