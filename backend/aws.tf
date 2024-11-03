@@ -29,7 +29,7 @@ resource "aws_ecr_repository" "default" {
 ################################################################################
 
 locals {
-  docker_source_file_sha1 = sha1(join("", [for f in ["build-docker.sh", "Dockerfile", "app/app.ts", "package.json"]: filesha1(f)]))
+  docker_source_file_sha1 = sha1(join("", [for f in ["build-docker.sh", "Dockerfile", "app/updateUserStatus.ts", "package.json"]: filesha1(f)]))
 }
 
 resource "null_resource" "image" {
