@@ -29,7 +29,7 @@ resource "aws_ecr_repository" "default" {
 ################################################################################
 
 locals {
-  docker_source_file_sha1 = sha1(join("", [for f in ["build-docker.sh", "Dockerfile", "app/app.js", "package.json"]: filesha1(f)]))
+  docker_source_file_sha1 = sha1(join("", [for f in ["build-docker.sh", "Dockerfile", "app/app.ts", "package.json"]: filesha1(f)]))
 }
 
 resource "null_resource" "image" {
@@ -149,7 +149,7 @@ resource "aws_api_gateway_rest_api" "api" {
       version = "1.0"
     }
     paths = {
-      "/slack/events" = {
+      "/status" = {
         post = {
           x-amazon-apigateway-integration = {
             httpMethod           = "POST"
@@ -174,7 +174,7 @@ resource "aws_api_gateway_deployment" "deployment" {
 }
 
 output "invoke_url" {
-  value = "${aws_api_gateway_deployment.deployment.invoke_url}/slack/events"
+  value = "${aws_api_gateway_deployment.deployment.invoke_url}/status-navi"
 }
 
 ################################################################################
