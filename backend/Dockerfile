@@ -1,3 +1,4 @@
+# build stage
 FROM node:18 AS builder
 
 WORKDIR /app
@@ -9,6 +10,7 @@ COPY . .
 
 RUN npx tsc
 
+# runtime stage
 FROM --platform=linux/amd64 public.ecr.aws/lambda/nodejs:18
 
 WORKDIR ${LAMBDA_TASK_ROOT}
