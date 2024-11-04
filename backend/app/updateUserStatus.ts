@@ -13,6 +13,7 @@ const app = new App({
 app.event('app_mention', async ({ event, client }) => {
   try {
     console.log(event);
+
     const { text } = event;
     const textWithoutMention = text.replace(/^<@(.+?)>/, '').trim();
 
@@ -39,9 +40,11 @@ exports.lambda_handler = async (
 
   try {
     const handler = await awsLambdaReceiver.start();
+
     return handler(event, context, callback);
   } catch (error) {
     console.error("Error in Lambda handler:", error);
+
     return {
       statusCode: 500,
       body: JSON.stringify({ message: "Internal Server Error" }),
