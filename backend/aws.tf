@@ -71,12 +71,12 @@ data "aws_iam_policy_document" "lambda_assume_role" {
   }
 }
 
-resource "aws_lambda_function" "api" {
+resource "aws_lambda_function" "update_user_status" {
   depends_on       = [
     aws_iam_role.lambda_role,
     null_resource.image,
   ]
-  function_name    = "${var.resource_name}-api"
+  function_name    = "${var.resource_name}-update-user-status"
   role             = aws_iam_role.lambda_role.arn
   package_type     = "Image"
   image_uri        = "${aws_ecr_repository.default.repository_url}:latest"
@@ -91,7 +91,7 @@ resource "aws_lambda_function" "api" {
 
 resource "null_resource" "refresh_lambda" {
   depends_on = [
-    aws_lambda_function.api,
+    aws_lambda_function.update_user_status,
     null_resource.image,
   ]
 
@@ -155,7 +155,7 @@ resource "aws_api_gateway_rest_api" "api" {
             httpMethod           = "POST"
             payloadFormatVersion = "1.0"
             type                 = "AWS_PROXY"
-            uri                  = aws_lambda_function.api.invoke_arn
+            uri                  = aws_lambda_function.update_user_status.invoke_arn
             credentials          = aws_iam_role.api_gateway_role.arn
           }
         }
@@ -175,6 +175,10 @@ resource "aws_api_gateway_deployment" "deployment" {
 
 output "invoke_url" {
   value = "${aws_api_gateway_deployment.deployment.invoke_url}/status"
+}
+
+output "lambda_function_name" {
+  value = aws_lambda_function.update_user_status.function_name
 }
 
 ################################################################################
