@@ -2,9 +2,12 @@ FROM node:18 AS builder
 
 WORKDIR /app
 
-COPY app/updateUserStatus.ts package.json tsconfig.json ./
+COPY package.json package-lock.json ./
+RUN npm install
 
-RUN npm install && npx tsc
+COPY . .
+
+RUN npx tsc
 
 FROM --platform=linux/amd64 public.ecr.aws/lambda/nodejs:18
 
