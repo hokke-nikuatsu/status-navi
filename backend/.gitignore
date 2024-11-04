@@ -8,3 +8,4 @@ terraform.tfvars
 # node related files
 node_modules/
 package-lock.json
+dist/
