@@ -3,6 +3,7 @@ variable aws_region {}
 variable resource_name {}
 variable slack_signing_secret {}
 variable slack_bot_token {}
+variable slack_user_token {}
 
 terraform {
   backend "s3" {
@@ -77,7 +78,6 @@ resource "aws_lambda_function" "update_user_status" {
     null_resource.image,
   ]
   function_name    = "${var.resource_name}-update-user-status"
-  handler          = "updateUserStatus.lambda_handler"
   role             = aws_iam_role.lambda_role.arn
   package_type     = "Image"
   image_uri        = "${aws_ecr_repository.default.repository_url}:latest"
@@ -86,6 +86,7 @@ resource "aws_lambda_function" "update_user_status" {
     variables = {
       "SLACK_SIGNING_SECRET" = var.slack_signing_secret
       "SLACK_BOT_TOKEN" = var.slack_bot_token
+      "SLACK_USER_TOKEN" = var.slack_user_token
     }
   }
 }

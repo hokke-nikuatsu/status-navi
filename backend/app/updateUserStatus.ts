@@ -18,6 +18,7 @@ app.event('app_mention', async ({ event, client }) => {
 
     if (textWithoutMention === "bi") {
       await client.users.profile.set({
+        token: process.env.SLACK_USER_TOKEN,
         profile: JSON.stringify({
           status_text: "休憩中",
           status_emoji: ":coffee:",
