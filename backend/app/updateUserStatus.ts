@@ -10,17 +10,20 @@ const app = new App({
   receiver: awsLambdaReceiver
 });
 
-app.event('app_mention', async ({ event, say }) => {
+app.event('app_mention', async ({ event, client }) => {
   try {
     console.log(event);
-    const { channel, event_ts, text } = event;
+    const { text } = event;
     const textWithoutMention = text.replace(/^<@(.+?)>/, '').trim();
 
-    await say({
-      channel,
-      thread_ts: event_ts,
-      text: `Hello! :wave: \n> ${textWithoutMention}`,
-    });
+    if (textWithoutMention === "bi") {
+      await client.users.profile.set({
+        profile: JSON.stringify({
+          status_text: "休憩中",
+          status_emoji: ":coffee:",
+        }),
+      });
+    }
   } catch (error) {
     console.error(error);
   }
@@ -33,6 +36,14 @@ exports.lambda_handler = async (
 ): Promise<APIGatewayProxyResult> => {
   console.log(event);
 
-  const handler = await awsLambdaReceiver.start();
-  return handler(event, context, callback);
+  try {
+    const handler = await awsLambdaReceiver.start();
+    return handler(event, context, callback);
+  } catch (error) {
+    console.error("Error in Lambda handler:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: "Internal Server Error" }),
+    };
+  }
 };
