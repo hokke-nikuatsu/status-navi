@@ -13,4 +13,4 @@ WORKDIR ${LAMBDA_TASK_ROOT}
 COPY --from=builder /app/dist/updateUserStatus.js ./updateUserStatus.js
 COPY --from=builder /app/node_modules ./node_modules
 
-CMD ["app.lambda_handler"]
+CMD ["updateUserStatus.lambda_handler"]
