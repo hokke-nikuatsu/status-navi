@@ -77,6 +77,7 @@ resource "aws_lambda_function" "update_user_status" {
     null_resource.image,
   ]
   function_name    = "${var.resource_name}-update-user-status"
+  handler          = "updateUserStatus.lambda_handler"
   role             = aws_iam_role.lambda_role.arn
   package_type     = "Image"
   image_uri        = "${aws_ecr_repository.default.repository_url}:latest"
