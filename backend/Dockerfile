@@ -1,5 +1,5 @@
 # build stage
-FROM node:18 AS builder
+FROM node:20 AS builder
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ FROM --platform=linux/amd64 public.ecr.aws/lambda/nodejs:18
 
 WORKDIR ${LAMBDA_TASK_ROOT}
 
-COPY --from=builder /app/dist/updateUserStatus.js ./updateUserStatus.js
+COPY --from=builder /app/dist/* ./
 COPY --from=builder /app/node_modules ./node_modules
 
 CMD ["updateUserStatus.lambda_handler"]
