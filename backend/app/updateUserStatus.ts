@@ -1,33 +1,41 @@
-import { App, AwsLambdaReceiver, AwsLambdaReceiverOptions } from '@slack/bolt';
-import { APIGatewayProxyEvent, Context, Callback, APIGatewayProxyResult } from 'aws-lambda';
+import { App, AwsLambdaReceiver, AwsLambdaReceiverOptions } from "@slack/bolt";
+import { APIGatewayProxyEvent, Context, Callback, APIGatewayProxyResult } from "aws-lambda";
+import { setSlackProfile, SlackProfileError } from "./slackClient";
+import { buildProfile, BuildProfileError } from './utils';
 
 const awsLambdaReceiver = new AwsLambdaReceiver({
-  signingSecret: process.env.SLACK_SIGNING_SECRET || ''
+  signingSecret: process.env.SLACK_SIGNING_SECRET || ""
 } as AwsLambdaReceiverOptions);
 
 const app = new App({
-  token: process.env.SLACK_BOT_TOKEN || '',
+  token: process.env.SLACK_BOT_TOKEN || "",
   receiver: awsLambdaReceiver
 });
 
-app.event('app_mention', async ({ event, client }) => {
+app.event("app_mention", async ({ event, client }) => {
   try {
-    console.log(event);
+    console.log("event:", event);
 
     const { text } = event;
-    const textWithoutMention = text.replace(/^<@(.+?)>/, '').trim();
+    const profile = buildProfile(text);
 
-    if (textWithoutMention === "bi") {
-      await client.users.profile.set({
-        token: process.env.SLACK_USER_TOKEN,
-        profile: JSON.stringify({
-          status_text: "休憩中",
-          status_emoji: ":coffee:",
-        }),
+    await setSlackProfile(client, profile);
+  } catch (error) {
+    if (error instanceof BuildProfileError || error instanceof SlackProfileError) {
+      console.error(error.message);
+
+      await client.chat.postMessage({
+        channel: event.channel,
+        text: error.message,
+      });
+    } else {
+      console.error("unexpected error:", error);
+
+      await client.chat.postMessage({
+        channel: event.channel,
+        text: "エラーが発生しました！担当者にお問い合わせください🙇‍♂️",
       });
     }
-  } catch (error) {
-    console.error(error);
   }
 });
 
